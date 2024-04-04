@@ -19,3 +19,9 @@ def split(data):
     train_set,test_set= train_test_split(data,test_size=0.2, random_state=42, stratify=data["income_cat"])
     data.drop('income_cat',axis= 'columns')
     return train_set, test_set
+
+def split_x_y(data):
+    X_data= data.drop("median_house_value",axis=1)
+    y_data= data["median_house_value"]
+    return X_data,y_data
+
