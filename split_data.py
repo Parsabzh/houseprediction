@@ -17,4 +17,5 @@ def split(data):
     data["income_cat"]= pd.cut(data["median_income"],bins=[0.,1.5,3.0,4.5,6.,np.inf],
                                labels=[1,2,3,4,5])
     train_set,test_set= train_test_split(data,test_size=0.2, random_state=42, stratify=data["income_cat"])
+    data.drop('income_cat',axis= 'columns')
     return train_set, test_set

@@ -4,6 +4,7 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 from scipy.stats import binom
 from split_data import split
+from pandas.plotting import scatter_matrix
 
 housing= load_data()
 
@@ -32,12 +33,31 @@ plt.rc('ytick', labelsize=10)
 
 housing.hist(bins=50, figsize=(12, 8))
 save_fig("attribute_histogram_plots")  # extra code
-plt.show()
+# plt.show()
 
 
 train_set, test_set= split(housing)
 
 housing= train_set.copy()
+print(housing.head())
 
-housing.plot(kind="scatter", x='longtitude',y='latitude',grid=True,alpha=0.2)
+housing.plot(kind="scatter", x="longitude", y="latitude", grid=True,
+s=housing["population"] / 100, label="population",
+c="median_house_value", cmap="jet", colorbar=True,
+legend=True, sharex=False, figsize=(10, 7))
 save_fig("population_density")
+# plt.show()
+
+#find and plot corr
+corr_matrix= housing.corr(numeric_only=True)
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+attributes = ["median_house_value", "median_income", "total_rooms",
+"housing_median_age"]
+scatter_matrix(housing[attributes], figsize=(12, 8))
+# plt.show()
+housing.plot(kind="scatter", x="median_income", y="median_house_value",
+alpha=0.1, grid=True)
+# plt.show()
+
+
