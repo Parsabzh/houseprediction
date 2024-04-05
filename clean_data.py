@@ -15,24 +15,22 @@ class data_cleaner():
         self.cat_encoder = OneHotEncoder(sparse_output=False,handle_unknown='ignore')
         set_config(transform_output="pandas")
     def impute_data(self):
-        data_num= self.data.select_dtypes([])
+        combined_data = pd.concat([self.X_train_data, self.X_test_data], axis=0)
+        data_num = combined_data.select_dtypes(include=[np.number])
         self.imputer.fit(data_num)
+        X_train= self.imputer.transform(self.X_train_data.select_dtypes(include=[np.number]))
+        X_test= self.imputer.transform(self.X_test_data.select_dtypes(include=[np.number]))
         print(self.imputer.statistics_)
-        return self.imputer.transform(data_num)
+        return X_train, X_test
     
     def to_one_hot(self):
-
-        train=self.cat_encoder.fit_transform(self.X_train_data["ocean_proximity"])
-        test= self.cat_encoder.transform(self.X_test_data["ocean_proximity"])
-        print (self.cat_encoder.categories_)
-        print(self.cat_encoder.feature_names_in_)
-        return train, test
-    
-class TestCode(unittest.TestCase):
-
-    def test_instance(self):
-        imputer = SimpleImputer(strategy='median')
-
-    def test_function(self):
-        def clean_data(df):
-            imputer = SimpleImputer(strategy='median')
+        if "ocean_proximity" in  self.X_train_data.columns and "ocean_proximity" in self.X_test_data.columns:
+            train=self.cat_encoder.fit_transform(self.X_train_data["ocean_proximity"])
+            test= self.cat_encoder.transform(self.X_test_data["ocean_proximity"])
+            print (self.cat_encoder.categories_)
+            print(self.cat_encoder.feature_names_in_)
+            return train, test
+        else:
+            print("ocean_proximity not in train and test data")
+            return None, None
+            

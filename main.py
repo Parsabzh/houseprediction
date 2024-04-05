@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from scipy.stats import binom
 from split_data import split
 from pandas.plotting import scatter_matrix
+from clean_data import data_cleaner
 
 housing= load_data()
 
@@ -71,4 +72,6 @@ print(corr_matrix["median_house_value"].sort_values(ascending=False))
 housing=train_set.drop("median_house_value", axis=1)
 housing_labels=train_set["median_house_value"].copy()   
 
-
+#Clean and Impute the data
+test_set
+ 
