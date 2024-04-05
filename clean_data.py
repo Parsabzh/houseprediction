@@ -13,7 +13,7 @@ class data_cleaner():
         self.X_test_data = X_test_data
         self.imputer = SimpleImputer(strategy='median')
         self.cat_encoder = OneHotEncoder(sparse_output=False,handle_unknown='ignore')
-        set_config(transform_output="pandas")
+        set_config(transform_output="pandas")  
     def impute_data(self):
         combined_data = pd.concat([self.X_train_data, self.X_test_data], axis=0)
         data_num = combined_data.select_dtypes(include=[np.number])
@@ -23,10 +23,11 @@ class data_cleaner():
         print(self.imputer.statistics_)
         return X_train, X_test
     
-    def to_one_hot(self):
-        if "ocean_proximity" in  self.X_train_data.columns and "ocean_proximity" in self.X_test_data.columns:
-            train=self.cat_encoder.fit_transform(self.X_train_data["ocean_proximity"])
-            test= self.cat_encoder.transform(self.X_test_data["ocean_proximity"])
+    def to_one_hot(self,train_imputed,test_imputed):
+        print(train_imputed.head(5))
+        if "ocean_proximity" in  train_imputed.columns and "ocean_proximity" in test_imputed.columns:
+            train=self.cat_encoder.fit_transform(train_imputed["ocean_proximity"])
+            test= self.cat_encoder.transform(train_imputed["ocean_proximity"])
             print (self.cat_encoder.categories_)
             print(self.cat_encoder.feature_names_in_)
             return train, test

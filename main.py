@@ -69,9 +69,13 @@ corr_matrix= housing.corr(numeric_only=True)
 print(corr_matrix["median_house_value"].sort_values(ascending=False))
 
 #seprate train and test set
-housing=train_set.drop("median_house_value", axis=1)
+housing_X_train=train_set.drop("median_house_value", axis=1)
 housing_labels=train_set["median_house_value"].copy()   
-
+houesing_X_test= test_set.drop("median_house_value", axis=1)
+housing_labels_test= test_set["median_house_value"].copy() 
 #Clean and Impute the data
-test_set
- 
+cleaner= data_cleaner(housing_X_train,houesing_X_test)
+train_set, test_set = cleaner.impute_data()
+train_set, test_set = cleaner.to_one_hot(train_set, test_set)
+(print(train_set.head(5)))
+(print(train_set.head(5)))
