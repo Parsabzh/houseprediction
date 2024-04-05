@@ -9,9 +9,12 @@ class data_cleaner():
         self.data = data
         self.imputer = SimpleImputer(strategy='median')
 
-    def 
+    
     def clean_data(self):
         data_num= self.data.select_dtypes([])
+        self.imputer.fit(data_num)
+        print(self.imputer.statistics_)
+        return self.imputer.transform(data_num)
 class TestCode(unittest.TestCase):
 
     def test_instance(self):
