@@ -5,7 +5,12 @@ from sklearn.model_selection import train_test_split
 from scipy.stats import binom
 from split_data import split
 from pandas.plotting import scatter_matrix
-from clean_data import data_cleaner
+from data_preprocessing import data_cleaner
+from sklearn.pipeline import make_pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.compose import make_column_selector, make_column_transformer
+from sklearn.preprocessing import StandardScaler,OneHotEncoder, FunctionTransformer
+import numpy as np
 
 housing= load_data()
 
@@ -74,8 +79,17 @@ housing_labels=train_set["median_house_value"].copy()
 houesing_X_test= test_set.drop("median_house_value", axis=1)
 housing_labels_test= test_set["median_house_value"].copy() 
 #Clean and Impute the data
-cleaner= data_cleaner(housing_X_train,houesing_X_test)
-train_set, test_set = cleaner.impute_data()
-train_set, test_set = cleaner.to_one_hot(train_set, test_set)
-(print(train_set.head(5)))
-(print(train_set.head(5)))
+# cleaner= data_cleaner(housing_X_train,houesing_X_test)
+# train_set, test_set = cleaner.impute_data()
+# train_set, test_set = cleaner.to_one_hot(train_set, test_set)
+# (print(train_set.head(5)))
+# (print(train_set.head(5)))
+
+num_pipe= make_pipeline(SimpleImputer(strategy="median"),StandardScaler)
+cat_pipe= make_pipeline(SimpleImputer(strategy='most_frequent'),OneHotEncoder(handle_unknown='ignore'))
+preprocess= make_column_transformer((num_pipe, make_column_selector(dtype_include=np.number)), (cat_pipe,make_column_selector(dtype_include=object)))
+
+housing_X_train = preprocess.fit_transform(train_set)
+
+
+
