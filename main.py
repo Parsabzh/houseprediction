@@ -11,7 +11,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.compose import make_column_selector, make_column_transformer
 from sklearn.preprocessing import StandardScaler,OneHotEncoder, FunctionTransformer
 import numpy as np
-
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 housing= load_data()
 
 print(housing.head())
@@ -80,5 +81,8 @@ houesing_X_test= test_set.drop("median_house_value", axis=1)
 housing_labels_test= test_set["median_house_value"].copy() 
 # data poreprocess
 preprocess= data_cleaner(data=housing_X_train)
-house_X_train = preprocess.preprocess()
-
+# train linear regression
+lr = make_pipeline(preprocess.preprocess(), LinearRegression())
+lr.fit(housing_X_train,housing_labels)
+prediction= lr.predict(housing_X_train)
+print(prediction[:5].round(-2))
