@@ -21,19 +21,20 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
         self.kmeans_ = KMeans(self.n_clusters, n_init=10,
                               random_state=self.random_state)
         self.kmeans_.fit(X, sample_weight=sample_weight)
-        return self  # always return self!
+        return self  
 
     def transform(self, X):
         return rbf_kernel(X, self.kmeans_.cluster_centers_, gamma=self.gamma)
     
     def get_feature_names_out(self, names=None):
         return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
-
-    def __init__(self):
+class data_cleaner():
+    def __init__(self,data):
         self.imputer = SimpleImputer(strategy="median")
         self.scaler = StandardScaler()
         self.one_hot_encoder = OneHotEncoder(handle_unknown="ignore")
-        self.imputer_cat= SimpleImputer(strategy="most_frecuent")
+        self.imputer_cat= SimpleImputer(strategy="most_frequent")
+        self.data= data
     def column_ratio(self, X):
         return X[:, [0]] / X[:, [1]]
 
@@ -43,18 +44,18 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
     def ratio_pipeline(self):
         return make_pipeline(
             SimpleImputer(strategy="median"),
-            FunctionTransformer(self.column_ratio, validate=False),  # feature_names_out should be validated elsewhere
+            FunctionTransformer(self.column_ratio, feature_names_out=self.ratio_name), 
             StandardScaler()
         )
 
     def log_pipeline(self):
         return make_pipeline(
             SimpleImputer(strategy="median"),
-            FunctionTransformer(np.log, validate=False),
+            FunctionTransformer(np.log, feature_names_out="one-to-one"),
             StandardScaler()
         )
 
-    def preprocess(self, X):
+    def preprocess(self):
         ratio_pipe = self.ratio_pipeline()
         log_pipe = self.log_pipeline()
         cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
@@ -69,6 +70,7 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
                 ("geo", cluster_simil, ["latitude", "longitude"]),
                 ("cat", cat_pipeline, make_column_selector(dtype_include=object)),
             ],
-            remainder=default_num_pipeline)  # one column remaining: housing_median_age
-        return preprocessing.fit_transform(X)
-
+            remainder=default_num_pipeline)  
+        housing_data = preprocessing.fit_transform(self.data)
+        print(preprocessing.get_feature_names_out())
+        return housing_data
